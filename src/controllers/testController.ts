@@ -11,9 +11,36 @@ async function getTestItem(req: Request, res: Response) {
 		},
 	});
 
-	const json = parser.parse(result.data);
+	const endpoint = parser
+		.parse(result.data)
+		.branches.branch.url.split('/')
+		.pop();
 
-	res.status(200).json(json);
+	const branchData = await altoApi.get(`branch/${endpoint}/property`, {
+		headers: {
+			Accept: 'application/xml',
+		},
+	});
+
+	const dataProperties = parser.parse(branchData.data);
+
+	const propertyList = dataProperties.properties.property;
+
+	const fullPropartyList = await Promise.all(
+		propertyList.map(async (el: any) => {
+			const data = await altoApi.get(
+				`branch/${endpoint}/property/${el.url.split('/').pop()}`,
+				{
+					headers: {
+						Accept: 'application/xml',
+					},
+				}
+			);
+			return parser.parse(data.data);
+		})
+	);
+
+	res.status(200).json(fullPropartyList);
 }
 
 export default {

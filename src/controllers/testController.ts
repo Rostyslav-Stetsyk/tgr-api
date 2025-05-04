@@ -1,10 +1,21 @@
 import { Request, Response } from 'express';
-import { formatResponse } from '../utils/responseFormatter';
+import { altoApi } from '../config/altoApi';
+import ctrlWrapper from '../utils/ctrlWrapper';
+import { XMLParser } from 'fast-xml-parser';
+const parser = new XMLParser();
 
-export function getTestItem(req: Request, res: Response) {
-	const formattedResponse = formatResponse({
-		id: '1',
-		name: 'test',
+async function getTestItem(req: Request, res: Response) {
+	const result = await altoApi.get('branch', {
+		headers: {
+			Accept: 'application/xml',
+		},
 	});
-	res.json(formattedResponse);
+
+	const json = parser.parse(result.data);
+
+	res.status(200).json(json);
 }
+
+export default {
+	getTestItem: ctrlWrapper(getTestItem),
+};

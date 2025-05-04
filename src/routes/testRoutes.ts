@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getTestItem } from '../controllers/testController';
-import { logMiddleware } from '../middlewares/testMiddlewares';
+import { altoAuthMiddleware } from '../middlewares/altoAuthMiddleware';
+import testCotroller from '../controllers/testController';
 
 const router = Router();
 
+router.get('/ping');
 /**
  * @swagger
  * /test:
@@ -30,6 +31,6 @@ const router = Router();
  *                    name:
  *                      type: string
  */
-router.get('/test', logMiddleware, getTestItem);
+router.get('/test', altoAuthMiddleware, testCotroller.getTestItem);
 
 export default router;

@@ -28,6 +28,7 @@ async function getTestItem(req: Request, res: Response) {
 
 	const fullPropartyList = await Promise.all(
 		propertyList.map(async (el: any) => {
+			console.log(el.url.split('/').pop());
 			const data = await altoApi.get(
 				`branch/${endpoint}/property/${el.url.split('/').pop()}`,
 				{
@@ -36,7 +37,7 @@ async function getTestItem(req: Request, res: Response) {
 					},
 				}
 			);
-			return parser.parse(data.data);
+			return { id: el.url.split('/').pop(), ...parser.parse(data.data) };
 		})
 	);
 
